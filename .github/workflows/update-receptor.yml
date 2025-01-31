@@ -1,0 +1,27 @@
+name: update-receptor
+
+on:
+  repository_dispatch:
+    types: [ping]
+
+jobs:
+  update-submodules:
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: write
+
+    steps:
+      - name: Main repo checkout
+        uses: actions/checkout@v3
+        with:
+          submodules: 'recursive'
+
+      - name: Submodule update
+        run: |
+          git submodule update --remote
+          git add .
+          git config --global user.name 'GitHub Actions'
+          git config --global user.email 'actions@github.com'
+          git commit -m 'Updating submodules ${{ github.event.client_payload.smd_name }} [skip ci]'
+          git push 
